@@ -15,9 +15,12 @@ This is an example of a simple chat script:
   CLICK
   EXPECT OK && /Gisle Aas/
 
-You can run it simply like this (assuming script is called 'av.wc'):
+You can run it like this (assuming script found in file 'av.wc'):
 
   webchatpp av.wc | perl
+
+Installation as usual; 'perl Makefile.PL; make install', and further
+documentation is embedded in the modules and the webchatpp script.
 
 Copyright 1998 Gisle Aas.  This is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
