@@ -13,7 +13,7 @@ DESCRIPTION
 
     GET <uri>
         This will fetch the indicated URI. The URI can be relative to the
-        previous one. Each GET gets it's own eval block within the perl
+        previous base. Each GET gets it's own eval block within the perl
         program to catch any exceptions. Inside this block, the following
         dynamically scoped variables are available:
 
@@ -22,9 +22,11 @@ DESCRIPTION
           $res       The response received             [HTTP::Response]
           $status    The status code of the response
           $ct        The content type of the response
+          $base      The base URI for current response
           $_         The content of the response
           @forms     Forms found in current content    [HTML::Form]
           $form      Current form                      [HTML::Form]
+          @links     Links found in current content
 
     EXPECT <expr>
         Evaluate the perl expression <expr> and report failure if it does
@@ -57,6 +59,14 @@ DESCRIPTION
 
         You can use the keyword "SUBMIT" instead of "CLICK" if you prefer.
         It is a plain alias.
+
+    FOLLOW /text/
+        Tries to find a hyperlink with the given description, and will then
+        follow it. Enters a new block like GET.
+
+    FOLLOW <num>
+        Will follow the <num>'th hyperlink on the current page. Enters a new
+        block like GET.
 
     BACK [<levels> | "ALL"]
         Ends the previous GET or CLICK blocks. The argument can be used to
