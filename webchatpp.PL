@@ -43,7 +43,7 @@ use LWP::UserAgent ();
 use HTML::Form ();
 use WWW::Chat qw(fail OK ERROR);
 
-use vars qw($ua $uri $base $req $res $status $ct @forms $form $TRACE);
+use vars qw($ua $uri $base $req $res $status $ct @forms $form @links $TRACE);
 
 $base = "http://localhost";
 $ua  = LWP::UserAgent->new;
@@ -75,6 +75,27 @@ while (<F>) {
 	print "${indent}eval {\n";
 	$level++;
         print "$indent    local \$uri = URI->new_abs($uri, \$base);\n";
+	print "$indent    local \$req = HTTP::Request->new(GET => \$uri);\n";
+	request("$indent    ");
+	line();
+
+    } elsif (/^(\s*)FOLLOW\s(.*)/) {
+	my $indent = $1;
+	my $what = $2;
+	$what =~ s/\s+$//;
+	print "${indent}# FOLLOW $what\n";
+	print "${indent}eval {\n";
+	$level++;
+	if ($what =~ m,^/,) {
+	    print "$indent    local \$uri;\n";
+	    print "$indent    for (\@links) { \$uri = \$_->[0], last if \$_->[1] =~ $what }\n";
+	    my $text = dump("FOLLOW $what");
+	    print "$indent    fail($text) unless defined \$uri;\n";
+	    print "$indent    \$uri = URI->new_abs(\$uri, \$base);\n";
+	} else {
+	    $what = dump($what);
+	    print "$indent    local \$uri = WWW::Chat::locate_link($what, \\\@links, \$base);\n";
+	}
 	print "$indent    local \$req = HTTP::Request->new(GET => \$uri);\n";
 	request("$indent    ");
 	line();
@@ -169,9 +190,12 @@ sub request
     print $indent, "local \$base = \$res->base;\n";
     print $indent, "local \$ct = \$res->content_type || \"\";\n";
     print $indent, "local \$_ = \$res->content;\n";
-    print $indent, "local(\@forms, \$form);\n";
-    print $indent, "\@forms = HTML::Form->parse(\$_, \$res->base) if \$ct eq 'text/html';\n";
-    print $indent, "\$form = \$forms[0] if \@forms;\n";
+    print $indent, "local(\@forms, \$form, \@links);\n";
+    print $indent, "if (\$ct eq 'text/html') {\n";
+    print $indent, "    \@forms = HTML::Form->parse(\$_, \$res->base);\n";
+    print $indent, "    \$form = \$forms[0] if \@forms;\n";
+    print $indent, "    \@links = WWW::Chat::extract_links(\$_);\n";
+    print $indent, "}\n";
 }
 
 sub line
@@ -216,6 +240,7 @@ dynamically scoped variables are available:
   $_         The content of the response
   @forms     Forms found in current content    [HTML::Form]
   $form      Current form                      [HTML::Form]
+  @links     Links found in current content
 
 =item EXPECT <expr>
 
@@ -251,6 +276,16 @@ scoped variables available.
 
 You can use the keyword "SUBMIT" instead of "CLICK" if you prefer.  It
 is a plain alias.
+
+=item FOLLOW /text/
+
+Tries to find a hyperlink with the given description, and will then
+follow it.  Enters a new block like GET.
+
+=item FOLLOW <num>
+
+Will follow the <num>'th hyperlink on the current page.  Enters a new
+block like GET.
 
 =item BACK [<levels> | "ALL"]
 
