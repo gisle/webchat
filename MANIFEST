@@ -1,7 +1,6 @@
+Changes
 MANIFEST
 Makefile.PL
 README
-lib/HTML/Form.pm
 lib/WWW/Chat.pm
-t/html-form.t
 webchatpp.PL
