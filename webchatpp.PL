@@ -43,9 +43,9 @@ use LWP::UserAgent ();
 use HTML::Form ();
 use WWW::Chat qw(fail OK ERROR);
 
-use vars qw($ua $uri $req $res $status $ct @forms $form $TRACE);
+use vars qw($ua $uri $base $req $res $status $ct @forms $form $TRACE);
 
-$uri = "http:";
+$base = "http://localhost";
 $ua  = LWP::UserAgent->new;
 $ua->agent("webchat/0.01 " . $ua->agent);
 $ua->env_proxy;
@@ -74,7 +74,7 @@ while (<F>) {
 	print "$indent#GET $uri\n";
 	print "${indent}eval {\n";
 	$level++;
-        print "$indent    local \$uri = URI->new_abs($uri, \$uri);\n";
+        print "$indent    local \$uri = URI->new_abs($uri, \$base);\n";
 	print "$indent    local \$req = HTTP::Request->new(GET => \$uri);\n";
 	request("$indent    ");
 	line();
@@ -166,6 +166,7 @@ sub request
     print $indent, "local \$res = WWW::Chat::request(\$req);\n";
     print $indent, "#print STDERR \$res->as_string;\n";
     print $indent, "local \$status = \$res->code;\n";
+    print $indent, "local \$base = \$res->base;\n";
     print $indent, "local \$ct = \$res->content_type || \"\";\n";
     print $indent, "local \$_ = \$res->content;\n";
     print $indent, "local(\@forms, \$form);\n";
@@ -202,7 +203,7 @@ following statements are recognized:
 =item GET <uri>
 
 This will fetch the indicated URI.  The URI can be relative to the
-previous one.  Each GET gets it's own eval block within the perl
+previous base.  Each GET gets it's own eval block within the perl
 program to catch any exceptions.  Inside this block, the following
 dynamically scoped variables are available:
 
@@ -211,6 +212,7 @@ dynamically scoped variables are available:
   $res       The response received             [HTTP::Response]
   $status    The status code of the response
   $ct        The content type of the response
+  $base      The base URI for current response
   $_         The content of the response
   @forms     Forms found in current content    [HTML::Form]
   $form      Current form                      [HTML::Form]
