@@ -52,10 +52,12 @@ use WWW::Chat qw(fail OK ERROR);
 
 use vars qw($ua $uri $base $req $res $status $ct @forms $form @links $TRACE);
 
-$base = "http://localhost";
-$ua  = LWP::UserAgent->new;
-$ua->agent("webchat/0.01 " . $ua->agent);
-$ua->env_proxy;
+$base ||= "http://localhost";
+unless ($ua) {
+    $ua  = LWP::UserAgent->new;
+    $ua->agent("webchat/0.01 " . $ua->agent);
+    $ua->env_proxy;
+}
 
 $TRACE = $ENV{WEBCHAT_TRACE};
 
