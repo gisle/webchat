@@ -345,9 +345,12 @@ And here is another one
 
 L<LWP>, L<HTML::Form>
 
-=head1 AUTHOR
+=head1 COPYRIGHT
 
-Gisle Aas <gisle@aas.no>
+Copyright 1998 Gisle Aas.
+
+This script is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
 
 =cut
 !NO!SUBS!
