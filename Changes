@@ -1,0 +1,17 @@
+1999-11-16   Gisle Aas <gisle@aas.no>
+
+   Release 0.05
+
+   Moved HTML::Form to LWP.  Require LWP-5.47 to get it back.
+
+
+
+1998-11-30   Gisle Aas <gisle@aas.no>
+
+   Release 0.04
+
+
+
+1998-11-21   Gisle Aas <gisle@aas.no>
+
+   Release 0.01 (unreleased)
