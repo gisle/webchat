@@ -19,6 +19,9 @@ print OUT <<'!NO!SUBS!';
 use strict;
 use Config qw(%Config);
 
+my $progname = $0;
+$progname =~ s,.*/,,; # loose path
+
 my $file;
 if (!@ARGV) {
     $file = "<stdin>";
@@ -31,6 +34,10 @@ if (!@ARGV) {
 }
 
 print "$Config{'startperl'} -w\n";
+
+print "# !!! DO NOT EDIT !!!\n";
+print "# This program was automatically generated from '$file' by $progname\n";
+
 print <<'EOT';
 
 use strict;
@@ -165,8 +172,6 @@ exit;
 
 sub usage
 {
-    my $progname = $0;
-    $progname =~ s,.*/,,; # loose path
     die "Usage: $progname [<file>]\n";
 }
 
