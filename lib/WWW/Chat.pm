@@ -68,4 +68,28 @@ sub findform
     $f;
 }
 
+sub extract_links
+{
+    require HTML::TokeParser;
+    my $p = HTML::TokeParser->new(\$_[0]);
+    my @links;
+
+    while (my $token = $p->get_tag("a")) {
+	my $url = $token->[1]{href};
+	next unless defined $url;   # probably just a name link
+	my $text = $p->get_trimmed_text("/a");
+	push(@links, [$url => $text]);
+    }
+    return @links;
+}
+
+sub locate_link
+{
+    my($where, $links, $base) = @_;
+    my $no_links = @$links;
+    Carp::croak("Only $no_links links on this page ($where)") if $where >= $no_links;
+    require URI;
+    URI->new_abs($links->[$where][0], $base);
+}
+
 1;
